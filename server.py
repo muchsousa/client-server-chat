@@ -20,12 +20,12 @@ class ChatClient():
                 if raw_message:
                     print(f"<{self.addr}> :: raw message :: {raw_message}")
 
-                    decoded_message = tlv.decode_tlv(raw_message)
+                    message = tlv.decode_tlv(raw_message)
 
-                    print(f"<{self.addr}> :: decoded message :: {decoded_message}")
+                    print(f"<{self.addr}> :: decoded message :: {message}")
 
-                    if (decoded_message["type"] == "command"):
-                        command = decoded_message["value"] or ""
+                    if (message["type"] == "command"):
+                        command = message["value"] or ""
         
                         # @ORDENAR: mostra as últimas 15 mensagens, ordenadas pelo horário de envio
                         if command == "@ORDENAR":
@@ -40,7 +40,7 @@ class ChatClient():
                         elif command == "@LOGIN":
                             print(f"<{self.addr}> :: command :: @LOGIN")
 
-                            self.username = decoded_message["username"]
+                            self.username = message["username"]
                             self._broadcast_message(raw_message)
                             
                         # @UPLOAD: faz upload de um arquivo para o servidor
@@ -57,7 +57,7 @@ class ChatClient():
                             print("Command unknown")
 
                     # broadcast message
-                    if (decoded_message["type"] == "message"):
+                    if (message["type"] == "message"):
                         self._broadcast_message(raw_message)
 
         except Exception as ex:
@@ -71,6 +71,9 @@ class ChatClient():
             self.conn.close()
 
         self.conn = None        
+
+        #TODO: remove from client list
+        # self.clients = []
 
         # broadcast the logout
         datetime_message = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
